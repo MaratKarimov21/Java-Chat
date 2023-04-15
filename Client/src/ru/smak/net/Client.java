@@ -7,14 +7,14 @@ public class Client {
     private String _host;
     private int _port;
     private Socket s;
-    private NetIO nio;
-    private IOAdapter ioadapter;
-    public Client(String host, int port) throws IOException {
+    public NetIO nio;
+    public IOAdapter adapter;
+    public Client(String host, int port, IOAdapter adapter) throws IOException {
         _host = host;
         _port = port;
         s = new Socket(_host, _port);
         nio = new NetIO(s);
-        ioadapter = new IOAdapter();
+        this.adapter = adapter;
     }
 
     public void startReceiving(){
@@ -22,7 +22,7 @@ public class Client {
             try {
                 nio.startReceiving(this::parse);
             } catch (IOException e) {
-                ioadapter.displayText("Ошибка: " + e.getMessage());
+                adapter.display("Ошибка: " + e.getMessage());
             }
         }).start();
     }
@@ -37,25 +37,24 @@ public class Client {
         switch (cmd) {
             case INTRODUCE -> {
                 if (data.length > 1 && data[1].trim().length() > 0) {
-                    ioadapter.displayText(data[1]);
+                    adapter.display(data[1]);
                 } else {
-//                    ioadapter.displayText("Представьтесь, пожалуйста:");
-                    ioadapter.displayText("Представьтесь, пожалуйста:");
+                    adapter.display("Представьтесь, пожалуйста:");
                 }
             }
             case MESSAGE -> {
                 if (data.length > 1 && data[1].trim().length() > 0) {
-                    ioadapter.displayText(data[1]);
+                    adapter.display(data[1]);
                 }
             }
             case LOGGED_IN -> {
                 if (data.length > 1 && data[1].trim().length() > 0) {
-                    ioadapter.displayText("Пользователь " + data[1] + " вошёл в чат");
+                    adapter.display("Пользователь " + data[1] + " вошёл в чат");
                 }
             }
             case LOGGED_OUT -> {
                 if (data.length > 1 && data[1].trim().length() > 0) {
-                    ioadapter.displayText("Пользователь " + data[1] + " покинул чат");
+                    adapter.display("Пользователь " + data[1] + " покинул чат");
                 }
             }
             case null -> {
@@ -69,7 +68,7 @@ public class Client {
         try {
             nio.sendData(userData);
         } catch (IOException e) {
-            ioadapter.displayText("Ошибка: " + e);
+            adapter.display("Ошибка: " + e);
         }
     }
 }

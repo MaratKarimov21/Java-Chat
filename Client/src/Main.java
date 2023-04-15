@@ -1,27 +1,24 @@
 import ru.smak.net.Client;
 import ru.smak.net.IOAdapter;
+import ru.smak.net.MainWindow;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 
 public class Main {
     public static void main(String[] args) {
-        var ioadapter = new IOAdapter();
+        var adapter = new IOAdapter();
         try {
-            var client = new Client("localhost", 5003);
+            var wnd = new MainWindow(adapter);
+            var client = new Client("localhost", 5003, adapter);
+
+            adapter.setClient(client);
+            adapter.setGui(wnd);
+
             client.startReceiving();
-            var stop = false;
-            var s = new BufferedReader(new InputStreamReader(ioadapter.enterValue()));
-            while (!stop){
-                var userData = s.readLine();
-                if (userData.equals("STOP")) {
-                    stop = true;
-                } else
-                    client.send(userData);
-            }
+            wnd.setVisible(true);
+
         } catch (IOException e) {
-            ioadapter.displayText("Ошибка: " + e.getMessage());
+            adapter.display("Ошибка: " + e.getMessage());
         }
     }
 }

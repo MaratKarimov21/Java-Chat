@@ -32,7 +32,11 @@ public class NetIO {
         var br = new BufferedReader(new InputStreamReader(s.getInputStream()));
         while (!stop){
             var data = br.readLine();
-            parser.apply(data);
+            if (data != null) {
+                parser.apply(data);
+            } else {
+                throw new IOException();
+            }
         }
     }
 

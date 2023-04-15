@@ -3,6 +3,7 @@ package ru.smak.net;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 
 public class ConnectedClient {
     private static final ArrayList<ConnectedClient> clients = new ArrayList<>();
