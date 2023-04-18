@@ -8,11 +8,13 @@ public class Client {
     private int _port;
     private Socket s;
     private NetIO nio;
+    private OutputHandler output;
     public Client(String host, int port) throws IOException {
         _host = host;
         _port = port;
         s = new Socket(_host, _port);
         nio = new NetIO(s);
+        output = new OutputHandler();
     }
 
     public void startReceiving(){
@@ -20,7 +22,7 @@ public class Client {
             try {
                 nio.startReceiving(this::parse);
             } catch (IOException e) {
-                System.out.println("Ошибка: " + e.getMessage());
+                output.displayError("Ошибка: " + e.getMessage());
             }
         }).start();
     }
@@ -37,22 +39,22 @@ public class Client {
                 if (data.length > 1 && data[1].trim().length() > 0) {
                     System.out.println(data[1]);
                 } else {
-                    System.out.println("Представьтесь, пожалуйста:");
+                    output.displaySystemMessage("Представьтесь, пожалуйста:");
                 }
             }
             case MESSAGE -> {
                 if (data.length > 1 && data[1].trim().length() > 0) {
-                    System.out.println(data[1]);
+                    output.displayMessage(data[1]);
                 }
             }
             case LOGGED_IN -> {
                 if (data.length > 1 && data[1].trim().length() > 0) {
-                    System.out.println("Пользователь " + data[1] + " вошёл в чат");
+                    output.displaySystemMessage("Пользователь " + data[1] + " вошёл в чат");
                 }
             }
             case LOGGED_OUT -> {
                 if (data.length > 1 && data[1].trim().length() > 0) {
-                    System.out.println("Пользователь " + data[1] + " покинул чат");
+                    output.displaySystemMessage("Пользователь " + data[1] + " покинул чат");
                 }
             }
             case null -> {
@@ -66,7 +68,7 @@ public class Client {
         try {
             nio.sendData(userData);
         } catch (IOException e) {
-            System.out.println("Ошибка: " + e);
+            output.displayError("Ошибка: " + e);
         }
     }
 }
